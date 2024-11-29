@@ -49,19 +49,62 @@ app.post("/members", async (req, res) => {
     );
     res.status(201).json({ message: "Member added successfully!" });
   } catch (err) {
-    console.error("Error adding member:", err);
-    res.status(500).json({ error: "Failed to add member" });
+    console.error("Error adding member:", err); // Log the error
+    res
+      .status(500)
+      .json({ error: "Failed to add member", details: err.message });
   }
 });
 
 app.delete("/members/:id", async (req, res) => {
   const { id } = req.params;
+
   try {
-    await pool.query("DELETE FROM Member WHERE MemberID = $1", [id]);
-    res.json({ message: "Member deleted successfully!" });
+    // Delete all reservations associated with the member
+    await pool.query('DELETE FROM "reservation" WHERE "MemberID" = $1', [id]);
+
+    // Delete the member
+    const result = await pool.query(
+      'DELETE FROM "Member" WHERE "MemberID" = $1',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+
+    res.json({ message: "Member deleted successfully" });
   } catch (err) {
     console.error("Error deleting member:", err);
     res.status(500).json({ error: "Failed to delete member" });
+  }
+});
+
+// Update a member
+app.put("/members/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, name, phonenumber, email, dob, address } = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE "Member" SET 
+        "Username" = $1, 
+        "Name" = $2, 
+        "PhoneNumber" = $3, 
+        "Email" = $4, 
+        "DoB" = $5, 
+        "Address" = $6 
+      WHERE "MemberID" = $7`,
+      [username, name, phonenumber, email, dob, address, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Member not found" });
+    }
+    res.json({ message: "Member updated successfully" });
+  } catch (err) {
+    console.error("Error updating member:", err);
+    res.status(500).json({ error: "Failed to update member" });
   }
 });
 
