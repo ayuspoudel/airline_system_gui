@@ -1,0 +1,61 @@
+-- View 1: Delayed flights with affected customers
+CREATE OR REPLACE VIEW DelayedFlightsWithCustomers AS
+SELECT 
+    m.Name AS "Passenger Name",
+    m.PhoneNumber AS "Contact Info",
+    f.Status AS "Flight Status",
+    f.FlightNumber AS "Flight Number",
+    f.DepartureTime AS "Departure Time",
+    f.ArrivalTime AS "Arrival Time",
+    a.AirlineName AS "Airline",
+    t.ClassName AS "Travel Class"
+FROM Member m
+INNER JOIN Reservation r ON m.MemberID = r.MemberID
+INNER JOIN Flight f ON r.FlightNumber = f.FlightNumber  
+INNER JOIN Airline a ON f.AirlineID = a.AirlineID
+INNER JOIN Travel_Class t ON f.FlightNumber = t.FlightNumber
+WHERE f.Status = 'Delayed' 
+AND r.Status = 'Confirmed';
+
+-- View 2: Flight information with crew assignment and booking details
+CREATE OR REPLACE VIEW FlightCrewBookingDetails AS
+SELECT DISTINCT
+    f.FlightNumber AS "Flight Number",
+    a.AirlineName AS "Airline",
+    f.DepartureTime AS "Departure Time",
+    ac.Model AS "Aircraft Model",
+    (SELECT COUNT(*) 
+     FROM Seat s 
+     WHERE s.FlightNumber = f.FlightNumber 
+     AND s.Status = 'Booked') AS "Booked Seats",
+    c.Name AS "Crew Member",
+    c.Position AS "Position Title"
+FROM Flight f
+INNER JOIN Airline a ON f.AirlineID = a.AirlineID
+INNER JOIN Aircraft ac ON f.AircraftID = ac.AircraftID
+INNER JOIN Crew c ON f.AirlineID = c.AirlineID
+-- Removed the CURRENT_DATE filter
+ORDER BY f.FlightNumber, c.Position;
+
+-- View 3: Payment aggregation by destination
+CREATE OR REPLACE VIEW PaymentAggregationByDestination AS
+SELECT 
+    d.CityName AS "Destination City",
+    d.CountryName AS "Country",
+    COUNT(DISTINCT r.ReservationID) AS "Total Reservations",
+    COALESCE(SUM(p.Amount), 0) AS "Total Payments"
+FROM Destination d
+LEFT JOIN Reservation r ON d.AirportCode = r.Route
+LEFT JOIN Payment p ON r.ReservationID = p.ReservationID
+GROUP BY d.CityName, d.CountryName;
+
+-- View 4: Updatable view for member information
+CREATE OR REPLACE VIEW MemberContactInfo AS
+SELECT 
+    MemberID,
+    Name,
+    Email,
+    PhoneNumber
+FROM Member
+WHERE MemberID IS NOT NULL  -- Ensures data integrity
+WITH CHECK OPTION;

@@ -1,6 +1,10 @@
 import React from "react";
 
-function DataTable({ records, onDelete }) {
+function DataTable({ records, onDelete, onEdit }) {
+  if (!records || records.length === 0) {
+    return <p>No records available.</p>;
+  }
+
   return (
     <table>
       <thead>
@@ -12,13 +16,25 @@ function DataTable({ records, onDelete }) {
         </tr>
       </thead>
       <tbody>
-        {records.map((record) => (
-          <tr key={record.memberid}>
-            {Object.values(record).map((value, idx) => (
-              <td key={idx}>{value}</td>
+        {records.map((record, idx) => (
+          <tr key={record.memberid || idx}>
+            {Object.values(record).map((value, valueIdx) => (
+              <td key={valueIdx}>
+                {value !== null && value !== undefined ? value : "-"}
+              </td>
             ))}
             <td>
-              <button onClick={() => onDelete(record.memberid)}>Delete</button>
+              {onEdit && <button onClick={() => onEdit(record)}>Edit</button>}
+              {onDelete && (
+                <button
+                  onClick={() => {
+                    console.log("Deleting record with ID:", record.memberid); // Debug log
+                    onDelete(record.memberid);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
             </td>
           </tr>
         ))}

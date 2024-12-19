@@ -3,10 +3,10 @@ import React, { useState } from "react";
 function CrudForm({ onSubmit, onUpdate, initialData }) {
   const [formData, setFormData] = useState(
     initialData || {
-      memberid: "",
+      memberid: "", // Match backend naming
       username: "",
       name: "",
-      phonenumber: "",
+      phonenumber: "", // Match backend naming
       email: "",
       dob: "",
       address: "",
@@ -20,10 +20,27 @@ function CrudForm({ onSubmit, onUpdate, initialData }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.memberid && onUpdate) {
-      onUpdate(formData); // Call update if editing
+    // Ensure all fields are filled
+    const { memberid, username, name, phonenumber, email, dob, address } =
+      formData;
+
+    if (
+      !memberid ||
+      !username ||
+      !name ||
+      !phonenumber ||
+      !email ||
+      !dob ||
+      !address
+    ) {
+      alert("All fields are required.");
+      return;
+    }
+
+    if (initialData) {
+      onUpdate(formData);
     } else {
-      onSubmit(formData); // Call insert if adding
+      onSubmit(formData);
     }
   };
 
@@ -34,8 +51,9 @@ function CrudForm({ onSubmit, onUpdate, initialData }) {
         value={formData.memberid}
         onChange={handleChange}
         placeholder="Member ID"
-        disabled={!!initialData} // Disable if editing
+        disabled={!!initialData} // Prevent editing the ID if updating
       />
+
       <input
         name="username"
         value={formData.username}
@@ -53,12 +71,14 @@ function CrudForm({ onSubmit, onUpdate, initialData }) {
         value={formData.phonenumber}
         onChange={handleChange}
         placeholder="Phone Number"
+        type="tel"
       />
       <input
         name="email"
         value={formData.email}
         onChange={handleChange}
         placeholder="Email"
+        type="email"
       />
       <input
         name="dob"

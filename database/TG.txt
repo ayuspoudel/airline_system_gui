@@ -1,0 +1,91 @@
+-- 1. BEFORE INSERT trigger to validate flight times
+CREATE OR REPLACE FUNCTION validate_flight_times()
+RETURNS TRIGGER AS $ValidateFlight$
+BEGIN
+    -- Check if arrival time is after departure time
+    IF NEW.ArrivalTime <= NEW.DepartureTime THEN
+        RAISE EXCEPTION 'Arrival time must be after departure time';
+    END IF;
+    
+    -- Check if flight date matches departure date
+    IF DATE(NEW.FlightDate) != DATE(NEW.DepartureTime) THEN
+        RAISE EXCEPTION 'Flight date must match departure date';
+    END IF;
+    
+    RETURN NEW;
+END;
+$ValidateFlight$ LANGUAGE plpgsql;
+
+CREATE TRIGGER flight_times_validation
+BEFORE INSERT ON Flight
+FOR EACH ROW
+EXECUTE FUNCTION validate_flight_times();
+
+-- 2. AFTER UPDATE trigger to log payment status changes
+CREATE TABLE Payment_Audit (
+    AuditID SERIAL PRIMARY KEY,
+    PaymentID VARCHAR(7),
+    OldStatus VARCHAR(20),
+    NewStatus VARCHAR(20),
+    ChangeDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION log_payment_status_change()
+RETURNS TRIGGER AS $PayStatus$
+BEGIN
+    IF OLD.Status != NEW.Status THEN
+        INSERT INTO Payment_Audit (PaymentID, OldStatus, NewStatus)
+        VALUES (OLD.PaymentID, OLD.Status, NEW.Status);
+    END IF;
+    RETURN NEW;
+END;
+$PayStatus$ LANGUAGE plpgsql;
+CREATE TRIGGER payment_status_audit
+AFTER UPDATE ON Payment
+FOR EACH ROW
+EXECUTE FUNCTION log_payment_status_change();
+
+-- 3. Create an audit table for crew deletions
+CREATE TABLE Crew_Deletion_Log (
+    LogID SERIAL PRIMARY KEY,
+    CrewID VARCHAR(10),
+    Name VARCHAR(50),
+    Position VARCHAR(20),
+    AirlineID CHAR(3),
+    DeletedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE OR REPLACE FUNCTION log_crew_deletion()
+RETURNS TRIGGER AS $LogCrewDeletion$
+BEGIN
+    INSERT INTO Crew_Deletion_Log (CrewID, Name, Position, AirlineID)
+    VALUES (OLD.CrewID, OLD.Name, OLD.Position, OLD.AirlineID);
+    RETURN OLD;
+END;
+$LogCrewDeletion$ LANGUAGE plpgsql;
+CREATE TRIGGER crew_deletion_audit
+BEFORE DELETE ON Crew
+FOR EACH ROW
+EXECUTE FUNCTION log_crew_deletion();
+
+-- 4. AFTER INSERT trigger to automatically assign seats
+CREATE OR REPLACE FUNCTION update_seat_status()
+RETURNS TRIGGER AS $UpdateSeatStatus$
+BEGIN
+    UPDATE Seat 
+    SET Status = 'Booked'
+    WHERE FlightNumber = NEW.FlightNumber 
+    AND Status = 'Available'
+    AND SeatID = (
+        SELECT s.SeatID 
+        FROM Seat s
+        WHERE s.FlightNumber = NEW.FlightNumber 
+        AND s.Status = 'Available'
+        LIMIT 1
+    );
+    RETURN NEW;
+END;
+$UpdateSeatStatus$ LANGUAGE plpgsql;
+
+CREATE TRIGGER seat_assignment
+AFTER INSERT ON Reservation
+FOR EACH ROW
+EXECUTE FUNCTION update_seat_status();

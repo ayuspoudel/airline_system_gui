@@ -1,0 +1,72 @@
+-- Member updates
+UPDATE Member SET PhoneNumber = 12345678912 WHERE MemberID = 'MBR0000001';  
+UPDATE Member SET Email = 'asingh@gmail.com' WHERE MemberID = 'MBR0000009';  
+UPDATE Member SET DoB = '1990-01-16' WHERE MemberID = 'MBR0000003';  
+UPDATE Member SET Address = '123 Main St, Boston, MA 02110', PhoneNumber = 12345678914 WHERE MemberID = 'MBR0000004';  
+
+-- Airline updates
+UPDATE Airline SET ContactNumber = 18000045671 WHERE AirlineID = 'AFR';  
+UPDATE Airline SET Website = regexp_replace(Website, '^www\.(.*)\.com$', 'www.\1.fr') WHERE AirlineID LIKE 'A%';
+UPDATE Airline SET Website = 'www.delta.ds' WHERE AirlineID = 'DAL';
+UPDATE Airline SET ContactNumber = 18000045672 WHERE AirlineID = 'DAL';  
+
+-- Aircraft updates
+UPDATE Aircraft SET Model = 'Boeing 777-300ER', Capacity = 400 WHERE AircraftID = 'AC00000001'; 
+UPDATE Aircraft SET ManufactureYear = 2020 WHERE AircraftID = 'AC00000009';  
+UPDATE Aircraft SET Capacity = 100 WHERE AircraftID = 'AC00000007';  
+UPDATE Aircraft SET Model = 'Airbus A320' WHERE AircraftID = 'AC00000006';  
+
+-- Flight updates
+UPDATE Flight SET DepartureTime = DepartureTime + interval '1 hour', Status = 'Delayed', ArrivalTime = ArrivalTime + interval '1 hour' 
+WHERE DepartureTime > '2024-11-01 18:00:00';
+UPDATE Flight SET DepartureTime = '2024-11-01 09:00:00', ArrivalTime = '2024-11-01 12:30:00' WHERE FlightNumber = 'UA123';
+UPDATE Flight SET Status = 'Cancelled' WHERE FlightNumber = 'DL234';  
+UPDATE Flight SET DepartureTime = DepartureTime - interval '2 hour' WHERE FlightNumber = 'EK234';  
+
+-- Reservation updates
+UPDATE Reservation SET Status = 'Cancelled' WHERE BookingDate < '2024-10-03';
+UPDATE Reservation SET Status = 'Pending', BookingDate = '2024-10-04' WHERE BookingDate >= '2024-10-03';
+UPDATE Reservation SET Status = 'Confirmed' WHERE Route = 'LAS' AND MemberID = 'MBR0000009';  
+UPDATE Reservation SET Status = 'Confirmed' WHERE Route = 'JFK';
+
+-- Payment updates
+UPDATE Payment SET Status = 'Completed' WHERE PaymentDate < '2024-10-03';  
+UPDATE Payment SET Status = 'Pending' WHERE PaymentMethod = 'Credit' AND PaymentDate < '2024-10-03';  
+UPDATE Payment SET PaymentDate = '2024-10-04' WHERE PaymentMethod != 'Credit' AND PaymentDate >= '2024-10-03';
+UPDATE Payment SET Status = 'Completed' WHERE PaymentMethod = 'Debit' AND PaymentDate >= '2024-10-03';  
+
+-- Destination updates
+UPDATE Destination SET CountryName = 'USA' WHERE CountryName = 'United States';
+UPDATE Destination SET CountryName = 'AUS' WHERE DestinationID = 'DST0000007';  
+UPDATE Destination SET CountryName = 'AUS' WHERE CountryName = 'Australia';
+UPDATE Destination SET CityName = 'LA' WHERE DestinationID = 'DST0000002';  
+
+-- Travel_Class updates
+UPDATE Travel_Class SET Description = 'Business Class Service' WHERE ClassName = 'Business';
+UPDATE Travel_Class SET Description = 'This is a part of Economy Class. It offers better service' WHERE ClassName = 'Economy'; 
+UPDATE Travel_Class SET Description = 'This is a standard class with basic service' WHERE ClassName = 'Economy';
+UPDATE Travel_Class SET Description = 'This is a premium class with luxury service' WHERE ClassName = 'First';  
+
+-- Seat updates
+UPDATE Seat SET Status = 'Booked' WHERE SeatType = 'Window';  
+UPDATE Seat SET Status = 'Booked' WHERE SeatID = '03C';  
+UPDATE Seat SET Status = 'Available' WHERE FlightNumber = 'EK234'; 
+UPDATE Seat SET Status = 'Available' WHERE ClassID = 'B1';
+
+-- Airline_Agent updates
+UPDATE Airline_Agent SET Email = 'jsarah@united.com' WHERE AgentID = 'AGT0000001';  
+UPDATE Airline_Agent SET PhoneNumber = 18000045553 WHERE AgentID = 'AGT0000006';  
+UPDATE Airline_Agent SET Name = 'Mohammed Ali', Email = 'mahmed.ali@emirates.com' WHERE AgentID = 'AGT0000010';  
+UPDATE Airline_Agent SET PhoneNumber = 18000045554 WHERE Name = 'Mohammed Ali';
+
+-- Administrator updates
+UPDATE Administrator SET AccessLevel = 'Limited' WHERE AccessLevel = 'Full';  
+UPDATE Administrator SET AccessLevel = 'Full' WHERE AdminID = 'ADM0000002';  
+UPDATE Administrator SET Name = 'Emma Johnson' WHERE AdminID = 'ADM0000010';  
+UPDATE Administrator SET Email = 'jemma@airline.com' WHERE Name = 'Emma Johnson';
+
+-- Crew updates
+UPDATE Crew SET Position = 'Pilot', LicenseNumber = 'CPT890123' WHERE CrewID = 'CRW0000009';  
+UPDATE Crew SET Name = 'John Doe', Position = 'Flight Attendant', LicenseNumber = 'FA789012' WHERE CrewID = 'CRW0000002';  
+UPDATE Crew SET Name = 'William Smith' WHERE CrewID = 'CRW0000009';  
+UPDATE Crew SET AirlineID = 'DAL' WHERE Name = 'William Smith';

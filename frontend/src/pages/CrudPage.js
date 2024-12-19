@@ -7,7 +7,7 @@ import DataTable from "../components/DataTable";
 function CrudPage() {
   const { table } = useParams();
   const [records, setRecords] = useState([]);
-  const [editData, setEditData] = useState(null); // State to store the record being edited
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     fetchRecords();
@@ -18,7 +18,10 @@ function CrudPage() {
       const response = await api.get(`/${table}`);
       setRecords(response.data);
     } catch (error) {
-      console.error("Error fetching records:", error);
+      console.error(
+        "Error fetching records:",
+        error.response?.data || error.message
+      );
     }
   };
 
@@ -28,36 +31,50 @@ function CrudPage() {
       alert("Record added successfully!");
       fetchRecords();
     } catch (error) {
-      console.error("Error adding record:", error);
+      console.error(
+        "Error adding record:",
+        error.response?.data || error.message
+      );
       alert("Failed to add record.");
     }
   };
 
   const handleUpdate = async (data) => {
+    if (!data.memberid) {
+      alert("Member ID is required for update.");
+      return;
+    }
+
     try {
-      await api.put(`/${table}/${data.memberid}`, data); // Use the primary key for the update URL
+      console.log("Update payload:", data);
+      await api.put(`/members/${data.memberid}`, data); // Pass `data.memberid` in the URL
       alert("Record updated successfully!");
       fetchRecords();
-      setEditData(null); // Reset edit data after a successful update
     } catch (error) {
-      console.error("Error updating record:", error);
+      console.error(
+        "Error updating record:",
+        error.response?.data || error.message
+      );
       alert("Failed to update record.");
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      await api.delete(`/${table}/${id}`);
+      await api.delete(`/members/${id}`);
       alert("Record deleted successfully!");
       fetchRecords();
     } catch (error) {
-      console.error("Error deleting record:", error);
+      console.error(
+        "Error deleting record:",
+        error.response?.data || error.message
+      );
       alert("Failed to delete record.");
     }
   };
 
   const handleEdit = (record) => {
-    setEditData(record); // Set the record to be edited
+    setEditData(record);
   };
 
   return (

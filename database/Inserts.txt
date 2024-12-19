@@ -1,0 +1,155 @@
+-- Member Inserts
+INSERT INTO Member (MemberID, Username, Name, PhoneNumber, Email, DoB, Address) VALUES
+('MBR0000001', 'jsmith', 'John Smith', 12345678901, 'john.smith@email.com', '1990-01-15', '123 Main St, Boston, MA'),
+('MBR0000002', 'agarcia', 'Ana Garcia', 12345678902, 'ana.garcia@email.com', '1985-03-22', '456 Park Ave, Miami, FL'),
+('MBR0000003', 'mlee', 'Michael Lee', 12345678903, 'michael.lee@email.com', '1992-07-30', '789 Oak Rd, Seattle, WA'),
+('MBR0000004', 'spatel', 'Sanya Patel', 12345678904, 'sanya.patel@email.com', '1988-11-05', '321 Pine St, Chicago, IL'),
+('MBR0000005', 'rkim', 'Ryan Kim', 12345678905, 'ryan.kim@email.com', '1995-04-18', '654 Maple Dr, NYC, NY'),
+('MBR0000006', 'lchen', 'Li Chen', 12345678906, 'li.chen@email.com', '1991-09-25', '987 Cedar Ln, SF, CA'),
+('MBR0000007', 'jbrown', 'James Brown', 12345678907, 'james.brown@email.com', '1987-06-12', '147 Elm St, Denver, CO'),
+('MBR0000008', 'mwilson', 'Maria Wilson', 12345678908, 'maria.wilson@email.com', '1993-02-28', '258 Birch Ave, Austin, TX'),
+('MBR0000009', 'asingh', 'Arun Singh', 12345678909, 'arun.singh@email.com', '1989-12-07', '369 Spruce Ct, Portland, OR'),
+('MBR0000010', 'tmuller', 'Tom Muller', 12345678910, 'tom.muller@email.com', '1994-08-20', '741 Ash Way, Phoenix, AZ');
+
+-- Airline inserts 
+INSERT INTO Airline (AirlineID, AirlineName, ContactNumber, Website) VALUES
+('UAL', 'United Airlines', 18004433333, 'www.united.com'),
+('DAL', 'Delta Air Lines', 18002211234, 'www.delta.com'),
+('AAL', 'American Airlines', 18004337300, 'www.aa.com'),
+('SWA', 'Southwest Airlines', 18004359792, 'www.southwest.com'),
+('JBU', 'JetBlue Airways', 18005382583, 'www.jetblue.com'),
+('ACA', 'Air Canada', 18002475588, 'www.aircanada.com'),
+('BAW', 'British Airways', 18002479297, 'www.ba.com'),
+('DLH', 'Lufthansa', 18006453880, 'www.lufthansa.com'),
+('AFR', 'Air France', 18002376639, 'www.airfrance.com'),
+('UAE', 'Emirates', 18007773999, 'www.emirates.com');
+
+-- Aircraft inserts 
+INSERT INTO Aircraft (AircraftID, Model, Capacity, ManufactureYear) VALUES
+('AC00000001', 'Boeing 737-800', 180, 2018),
+('AC00000002', 'Boeing 777-300', 350, 2019),
+('AC00000003', 'Airbus A320', 170, 2017),
+('AC00000004', 'Airbus A350', 300, 2020),
+('AC00000005', 'Boeing 787-9', 290, 2021),
+('AC00000006', 'Airbus A220', 140, 2019),
+('AC00000007', 'Embraer E195', 120, 2018),
+('AC00000008', 'Boeing 757-800', 200, 2016),
+('AC00000009', 'Airbus A330', 280, 2017),
+('AC00000010', 'Boeing 747-400', 400, 2015);
+
+-- Flight inserts
+INSERT INTO Flight (FlightNumber, FlightDate, DepartureTime, ArrivalTime, Status, AirlineID, AircraftID) VALUES
+('UA123', '2024-11-01', '2024-11-01 08:00:00', '2024-11-01 11:00:00', 'Delayed', 'UAL', 'AC00000001'),
+('DL234', '2024-11-01', '2024-11-01 09:30:00', '2024-11-01 12:30:00', 'Cancelled', 'DAL', 'AC00000002'),
+('AA345', '2024-11-01', '2024-11-01 10:45:00', '2024-11-01 14:15:00', 'Cancelled', 'AAL', 'AC00000003'),
+('SW456', '2024-11-01', '2024-11-01 12:00:00', '2024-11-01 15:00:00', 'Scheduled', 'SWA', 'AC00000004'),
+('JB567', '2024-11-01', '2024-11-01 13:30:00', '2024-11-01 16:30:00', 'Delayed', 'JBU', 'AC00000005'),
+('AC678', '2024-11-01', '2024-11-01 14:45:00', '2024-11-01 18:15:00', 'Scheduled', 'ACA', 'AC00000006'),
+('BA789', '2024-11-01', '2024-11-01 16:00:00', '2024-11-01 20:00:00', 'Delayed', 'BAW', 'AC00000007'),
+('LH890', '2024-11-01', '2024-11-01 17:30:00', '2024-11-01 21:30:00', 'Scheduled', 'DLH', 'AC00000008'),
+('AF123', '2024-11-01', '2024-11-01 19:00:00', '2024-11-01 23:00:00', 'Scheduled', 'AFR', 'AC00000009'),
+('EK234', '2024-11-01', '2024-11-01 20:30:00', '2024-11-02 02:30:00', 'Scheduled', 'UAE', 'AC00000010');
+
+-- Reservation inserts
+INSERT INTO Reservation (ReservationID, PNRNumber, BookingDate, TravelDate, Status, Route, MemberID, FlightNumber) VALUES
+('RSV0000001', 'ABC123', '2024-10-01', '2024-11-01', 'Confirmed', 'JFK', 'MBR0000001', 'UA123'),
+('RSV0000002', 'DEF456', '2024-10-02', '2024-11-01', 'Confirmed', 'LAX', 'MBR0000002', 'DL234'),
+('RSV0000003', 'GHI789', '2024-10-03', '2024-11-01', 'Confirmed', 'SFO', 'MBR0000003', 'AA345'),
+('RSV0000004', 'JKL012', '2024-10-04', '2024-11-01', 'Confirmed', 'ORD', 'MBR0000004', 'SW456'),
+('RSV0000005', 'MNO345', '2024-10-05', '2024-11-01', 'Confirmed', 'MIA', 'MBR0000005', 'JB567'),
+('RSV0000006', 'PQR678', '2024-10-06', '2024-11-01', 'Confirmed', 'DFW', 'MBR0000006', 'AC678'),
+('RSV0000007', 'STU901', '2024-10-07', '2024-11-01', 'Confirmed', 'SEA', 'MBR0000007', 'BA789'),
+('RSV0000008', 'VWX234', '2024-10-08', '2024-11-01', 'Confirmed', 'BOS', 'MBR0000008', 'LH890'),
+('RSV0000009', 'YZA567', '2024-10-09', '2024-11-01', 'Confirmed', 'LAS', 'MBR0000009', 'AF123'),
+('RSV0000010', 'BCD890', '2024-10-10', '2024-11-01', 'Confirmed', 'ATL', 'MBR0000010', 'EK234');
+
+-- Payment inserts
+INSERT INTO Payment (PaymentID, Amount, PaymentDate, PaymentMethod, Status, ReservationID, MemberID) VALUES
+('PMT0001', 450.00, '2024-10-01', 'Credit', 'Completed', 'RSV0000001', 'MBR0000001'),
+('PMT0002', 550.00, '2024-10-02', 'Debit', 'Completed', 'RSV0000002', 'MBR0000002'),
+('PMT0003', 600.00, '2024-10-03', 'Cash', 'Completed', 'RSV0000003', 'MBR0000003'),
+('PMT0004', 700.00, '2024-10-04', 'Credit', 'Completed', 'RSV0000004', 'MBR0000004'),
+('PMT0005', 800.00, '2024-10-05', 'Debit', 'Completed', 'RSV0000005', 'MBR0000005'),
+('PMT0006', 900.00, '2024-10-06', 'Credit', 'Completed', 'RSV0000006', 'MBR0000006'),
+('PMT0007', 750.00, '2024-10-07', 'Debit', 'Completed', 'RSV0000007', 'MBR0000007'),
+('PMT0008', 650.00, '2024-10-08', 'Cash', 'Completed', 'RSV0000008', 'MBR0000008'),
+('PMT0009', 850.00, '2024-10-09', 'Credit', 'Completed', 'RSV0000009', 'MBR0000009'),
+('PMT0010', 950.00, '2024-10-10', 'Debit', 'Completed', 'RSV0000010', 'MBR0000010');
+
+-- Destination inserts
+INSERT INTO Destination (DestinationID, AirportCode, CityName, CountryName) VALUES
+('DST0000001', 'JFK', 'New York', 'United States'),
+('DST0000002', 'LAX', 'Los Angeles', 'United States'),
+('DST0000003', 'LHR', 'London', 'United Kingdom'),
+('DST0000004', 'CDG', 'Paris', 'France'),
+('DST0000005', 'NRT', 'Tokyo', 'Japan'),
+('DST0000006', 'DXB', 'Dubai', 'UAE'),
+('DST0000007', 'SYD', 'Sydney', 'Australia'),
+('DST0000008', 'HKG', 'Hong Kong', 'China'),
+('DST0000009', 'SIN', 'Singapore', 'Singapore'),
+('DST0000010', 'FRA', 'Frankfurt', 'Germany');
+
+-- Travel_Class inserts 
+INSERT INTO Travel_Class (ClassID, ClassName, Description, FlightNumber) VALUES
+('F1', 'First', 'Premium first class service', 'UA123'),
+('B1', 'Business', 'Full business class service', 'DL234'),
+('E1', 'Economy', 'Standard economy service', 'AA345'),
+('Y1', 'Economy', 'Standard economy service', 'SW456'),
+('F2', 'First', 'Premium first class service', 'JB567'),
+('B2', 'Business', 'Full business class service', 'AC678'),
+('E2', 'Economy', 'Standard economy service', 'BA789'),
+('Y2', 'Economy', 'Standard economy service', 'LH890'),
+('F3', 'First', 'Premium first class service', 'AF123'),
+('B3', 'Business', 'Full business class service', 'EK234');
+
+-- Seat inserts 
+INSERT INTO Seat (SeatID, SeatType, ClassID, FlightNumber, Status) VALUES
+('01A', 'Window', 'F1', 'UA123', 'Available'),
+('02B', 'Aisle', 'B1', 'DL234', 'Available'),
+('03C', 'Middle', 'E1', 'AA345', 'Available'),
+('04D', 'Window', 'Y1', 'SW456', 'Available'),
+('05E', 'Aisle', 'F2', 'JB567', 'Available'),
+('06F', 'Window', 'B2', 'AC678', 'Available'),
+('07G', 'Middle', 'E2', 'BA789', 'Available'),
+('08H', 'Aisle', 'Y2', 'LH890', 'Available'),
+('09I', 'Window', 'F3', 'AF123', 'Available'),
+('10J', 'Aisle', 'B3', 'EK234', 'Available');
+
+-- Airline Agents inserts
+INSERT INTO Airline_Agent (AgentID, Name, Email, PhoneNumber, Position, AirlineID) VALUES
+('AGT0000001', 'Sarah Johnson', 'sarah.j@united.com', 11112223333, 'Supervisor', 'UAL'),
+('AGT0000002', 'David Chen', 'david.c@delta.com', 22223334444, 'Agent', 'DAL'),
+('AGT0000003', 'Maria Rodriguez', 'maria.r@aa.com', 33334445555, 'Manager', 'AAL'),
+('AGT0000004', 'James Wilson', 'james.w@southwest.com', 44445556666, 'Agent', 'SWA'),
+('AGT0000005', 'Emily Brown', 'emily.b@jetblue.com', 55556667777, 'Supervisor', 'JBU'),
+('AGT0000006', 'Michael Kim', 'michael.k@aircanada.com', 66667778888, 'Agent', 'ACA'),
+('AGT0000007', 'Lisa Thompson', 'lisa.t@ba.com', 77778889999, 'Manager', 'BAW'),
+('AGT0000008', 'Thomas Mueller', 'thomas.m@lufthansa.com', 88889990000, 'Agent', 'DLH'),
+('AGT0000009', 'Sophie Martin', 'sophie.m@airfrance.com', 99990001111, 'Supervisor', 'AFR'),
+('AGT0000010', 'Ahmed Ali', 'ahmed.a@emirates.com', 10001112222, 'Manager', 'UAE');
+
+-- Administrator inserts
+INSERT INTO Administrator (AdminID, Name, Email, PhoneNumber, AccessLevel) VALUES
+('ADM0000001', 'John Admin', 'john.admin@airline.com', 12223334444, 'Full'),
+('ADM0000002', 'Mary Manager', 'mary.manager@airline.com', 23334445555, 'Limited'),
+('ADM0000003', 'Peter Power', 'peter.power@airline.com', 34445556666, 'Full'),
+('ADM0000004', 'Susan Super', 'susan.super@airline.com', 45556667777, 'Limited'),
+('ADM0000005', 'Robert Root', 'robert.root@airline.com', 56667778888, 'Full'),
+('ADM0000006', 'Alice Auth', 'alice.auth@airline.com', 67778889999, 'Limited'),
+('ADM0000007', 'David Data', 'david.data@airline.com', 78889990000, 'Full'),
+('ADM0000008', 'Carol Control', 'carol.control@airline.com', 89990001111, 'Limited'),
+('ADM0000009', 'Brian Backup', 'brian.backup@airline.com', 90001112222, 'Full'),
+('ADM0000010', 'Emma Exec', 'emma.exec@airline.com', 11112223333, 'Limited');
+
+-- Crew inserts 
+INSERT INTO Crew (CrewID, Name, Position, LicenseNumber, AirlineID) VALUES
+('CRW0000001', 'Jack Wilson', 'Pilot', 'CPT123456', 'UAL'),
+('CRW0000002', 'Emma Davis', 'Pilot', 'FO789012', 'DAL'),
+('CRW0000003', 'Carlos Santos', 'Flight Attendant', 'FA345678', 'AAL'),
+('CRW0000004', 'Linda Park', 'Pilot', 'CPT901234', 'SWA'),
+('CRW0000005', 'Hassan Ahmed', 'Pilot', 'FO567890', 'JBU'),
+('CRW0000006', 'Marie Claire', 'Flight Attendant', 'FA123789', 'ACA'),
+('CRW0000007', 'Boris Petrov', 'Pilot', 'CPT456789', 'BAW'),
+('CRW0000008', 'Anna Schmidt', 'Pilot', 'FO234567', 'DLH'),
+('CRW0000009', 'Paolo Rossi', 'Flight Attendant', 'FA890123', 'AFR'),
+('CRW0000010', 'Yuki Tanaka', 'Pilot', 'CPT678901', 'UAE');

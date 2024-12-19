@@ -1,0 +1,124 @@
+-- Create the Member table
+CREATE TABLE Member (
+    MemberID VARCHAR(10) PRIMARY KEY CHECK (MemberID SIMILAR TO 'MBR[0-9]{7}'),
+    Username VARCHAR(50) NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    PhoneNumber BIGINT NOT NULL UNIQUE,
+    Email VARCHAR(100) NOT NULL UNIQUE CHECK (Email LIKE '%@%.%'),
+    DoB DATE NOT NULL,
+    Address VARCHAR(200) NOT NULL
+);
+
+-- Create the Airline table
+CREATE TABLE Airline (
+    AirlineID CHAR(3) PRIMARY KEY,
+    AirlineName VARCHAR(50) NOT NULL,
+    ContactNumber BIGINT NOT NULL,
+    Website VARCHAR(50) CHECK (Website LIKE 'www.%.%')
+);
+
+-- Create the Aircraft table
+CREATE TABLE Aircraft (
+    AircraftID VARCHAR(10) PRIMARY KEY CHECK (AircraftID SIMILAR TO 'AC[0-9]{8}'),
+    Model VARCHAR(50) NOT NULL,
+    Capacity INTEGER NOT NULL CHECK (Capacity BETWEEN 1 AND 1000),
+    ManufactureYear INTEGER NOT NULL CHECK (ManufactureYear BETWEEN 1900 AND 2024)
+);
+
+-- Create the Flight table
+CREATE TABLE Flight (
+    FlightNumber VARCHAR(10) PRIMARY KEY CHECK (FlightNumber ~ '^[A-Z]{2}\d{3}$'),
+    FlightDate DATE NOT NULL,
+    DepartureTime TIMESTAMP NOT NULL,
+    ArrivalTime TIMESTAMP NOT NULL,
+    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Scheduled', 'Delayed', 'Cancelled')),
+    AirlineID CHAR(3) NOT NULL,
+    AircraftID VARCHAR(11) NOT NULL,
+    CONSTRAINT fk_airline_flight FOREIGN KEY (AirlineID) REFERENCES Airline(AirlineID),
+    CONSTRAINT fk_aircraft_flight FOREIGN KEY (AircraftID) REFERENCES Aircraft(AircraftID)
+);
+
+-- Create the Reservation table
+CREATE TABLE Reservation (
+    ReservationID VARCHAR(10) PRIMARY KEY CHECK (ReservationID SIMILAR TO 'RSV[0-9]{7}'),
+    PNRNumber VARCHAR(6) NOT NULL,
+    BookingDate DATE NOT NULL,
+    TravelDate DATE NOT NULL,
+    Status VARCHAR(10) NOT NULL CHECK (Status IN ('Confirmed', 'Pending', 'Cancelled')),
+    Route CHAR(3) NOT NULL,
+    MemberID VARCHAR(10) NOT NULL,
+    FlightNumber VARCHAR(10) NOT NULL,
+    CONSTRAINT fk_member_reservation FOREIGN KEY (MemberID) REFERENCES Member(MemberID),
+    CONSTRAINT fk_flight_reservation FOREIGN KEY (FlightNumber) REFERENCES Flight(FlightNumber)
+);
+
+-- Create the Payment table
+CREATE TABLE Payment (
+    PaymentID VARCHAR(7) PRIMARY KEY CHECK (PaymentID SIMILAR TO 'PMT[0-9]{4}'),
+    Amount DECIMAL(10, 2) NOT NULL CHECK (Amount BETWEEN 0.00 AND 999999.99),
+    PaymentDate DATE NOT NULL,
+    PaymentMethod VARCHAR(50) NOT NULL CHECK (PaymentMethod IN ('Credit', 'Debit', 'Cash')),
+    Status VARCHAR(20) CHECK (Status IN ('Completed', 'Pending', 'Failed')),
+    ReservationID VARCHAR(10) NOT NULL,
+    MemberID VARCHAR(10) NOT NULL,
+    CONSTRAINT fk_reservation_payment FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID),
+    CONSTRAINT fk_member_payment FOREIGN KEY (MemberID) REFERENCES Member(MemberID)
+);
+
+-- Create the Destination table
+CREATE TABLE Destination (
+    DestinationID VARCHAR(10) PRIMARY KEY CHECK (DestinationID SIMILAR TO 'DST[0-9]{7}'),
+    AirportCode CHAR(3) NOT NULL,
+    CityName VARCHAR(50) NOT NULL,
+    CountryName VARCHAR(50) NOT NULL
+);
+
+-- Create the Travel_Class table
+CREATE TABLE Travel_Class (
+    ClassID CHAR(2) PRIMARY KEY,
+    ClassName VARCHAR(20) NOT NULL CHECK (ClassName IN ('Economy', 'Business', 'First')),
+    Description VARCHAR(100),
+    FlightNumber VARCHAR(10) NOT NULL,
+    CONSTRAINT fk_flight_class FOREIGN KEY (FlightNumber) REFERENCES Flight(FlightNumber)
+);
+
+-- Create the Seat table
+CREATE TABLE Seat (
+    SeatID VARCHAR(10) PRIMARY KEY CHECK (SeatID ~ '^\d{2}[A-Z]$'),
+    SeatType VARCHAR(20) NOT NULL CHECK (SeatType IN ('Window', 'Aisle', 'Middle')),
+    ClassID CHAR(2) NOT NULL,
+    FlightNumber VARCHAR(10) NOT NULL,
+    Status VARCHAR(20) CHECK (Status IN ('Available', 'Booked')),
+    CONSTRAINT fk_class_seat FOREIGN KEY (ClassID) REFERENCES Travel_Class(ClassID),
+    CONSTRAINT fk_flight_seat FOREIGN KEY (FlightNumber) REFERENCES Flight(FlightNumber)
+);
+
+-- Create the Airline_Agent table
+CREATE TABLE Airline_Agent (
+    AgentID VARCHAR(10) PRIMARY KEY CHECK (AgentID SIMILAR TO 'AGT[0-9]{7}'),
+    Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL CHECK (Email LIKE '%@%.%'),
+    PhoneNumber BIGINT NOT NULL,
+    Position VARCHAR(20) NOT NULL,
+    AirlineID CHAR(3) NOT NULL,
+    CONSTRAINT fk_airline_agent FOREIGN KEY (AirlineID) REFERENCES Airline(AirlineID)
+);
+
+-- Create the Administrator table
+CREATE TABLE Administrator (
+    AdminID VARCHAR(10) PRIMARY KEY CHECK (AdminID SIMILAR TO 'ADM[0-9]{7}'),
+    Name VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL CHECK (Email LIKE '%@%.%'),
+    PhoneNumber BIGINT NOT NULL,
+    AccessLevel VARCHAR(20) NOT NULL CHECK (AccessLevel IN ('Full', 'Limited'))
+);
+
+-- Create the Crew table
+CREATE TABLE Crew (
+    CrewID VARCHAR(10) PRIMARY KEY CHECK (CrewID SIMILAR TO 'CRW[0-9]{7}'),
+    Name VARCHAR(50) NOT NULL,
+    Position VARCHAR(20) NOT NULL CHECK (Position IN ('Pilot', 'Flight Attendant')),
+    LicenseNumber VARCHAR(20) NOT NULL,
+    AirlineID CHAR(3) NOT NULL,
+    CONSTRAINT fk_airline_crew FOREIGN KEY (AirlineID) REFERENCES Airline(AirlineID)
+);

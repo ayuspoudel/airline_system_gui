@@ -1,0 +1,102 @@
+-- Procedure 1: Removes the Reservation of a Flight for a specific flight number and a specific date
+CREATE OR REPLACE PROCEDURE CancelFlightReservations(
+    IN flight_num VARCHAR(10),
+    IN travel_date DATE
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    cancelled_count INTEGER;
+BEGIN
+    UPDATE Reservation
+    SET Status = 'Cancelled'
+    WHERE FlightNumber = flight_num
+    AND TravelDate = travel_date
+    AND Status = 'Confirmed';
+    
+    GET DIAGNOSTICS cancelled_count = ROW_COUNT;
+    
+    IF cancelled_count = 0 THEN
+        RAISE EXCEPTION 'No confirmed reservations found for flight % on %', 
+            flight_num, travel_date;
+    END IF;
+    
+    RAISE NOTICE 'Cancelled % reservation(s) for flight % on %', 
+        cancelled_count, flight_num, travel_date;
+END;
+$$;
+
+-- Procedure 2: Update seat availability based on booking status
+CREATE OR REPLACE PROCEDURE UpdateSeatStatus(
+    IN SeatIDInput VARCHAR,
+    IN NewStatus VARCHAR)
+LANGUAGE plpgsql
+AS $UpdateSeat$
+BEGIN
+    UPDATE Seat
+    SET Status = NewStatus
+    WHERE SeatID = SeatIDInput 
+    AND Status IN ('Available', 'Booked');
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Seat not found or invalid status transition';
+    END IF;
+END;
+$UpdateSeat$;
+
+-- Procedure 3: Insert a reservation with member validation
+CREATE OR REPLACE PROCEDURE InsertReservation(
+    p_ReservationID VARCHAR(10),
+    p_PNRNumber VARCHAR(6),
+    p_BookingDate DATE,
+    p_TravelDate DATE,
+    p_Status VARCHAR(10),
+    p_Route CHAR(3),
+    p_MemberID VARCHAR(10),
+    p_FlightNumber VARCHAR(10)
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO Reservation (
+        ReservationID,
+        PNRNumber,
+        BookingDate,
+        TravelDate,
+        Status,
+        Route,
+        MemberID,
+        FlightNumber
+    ) VALUES (
+        p_ReservationID,
+        p_PNRNumber,
+        p_BookingDate,
+        p_TravelDate,
+        p_Status,
+        p_Route,
+        p_MemberID,
+        p_FlightNumber
+    );
+END;
+$$;
+
+-- Function 1: Calculate total revenue for an airline
+CREATE OR REPLACE FUNCTION CalculateTotalRevenue(
+    AirlineIDInput CHAR(3)
+)
+RETURNS DECIMAL(10, 2)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    total_revenue DECIMAL(10, 2);
+BEGIN
+    SELECT COALESCE(SUM(p.Amount), 0) INTO total_revenue
+    FROM Payment p
+    JOIN Reservation r ON p.ReservationID = r.ReservationID
+    JOIN Flight f ON r.FlightNumber = f.FlightNumber
+    WHERE f.AirlineID = AirlineIDInput
+    AND p.Status = 'Completed';
+
+    RETURN total_revenue;
+END;
+$$;
